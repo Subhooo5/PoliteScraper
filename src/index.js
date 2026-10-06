@@ -4,6 +4,7 @@ import { validateAndStore } from './store.js'
 import { writeReport } from './report.js'
 import { stats } from './http.js'
 import { writeCsv } from './csv.js'
+import { detectChanges } from './changes.js'
 
 const startedAt = new Date()
 const withFake = process.argv.includes('--with-fake')
@@ -23,5 +24,6 @@ console.log(`detail_pages=${rawRecords.length}`)
 
 const { valid, errors } = await validateAndStore(rawRecords)
 await writeCsv(valid)
-const report = await writeReport(startedAt, stats, valid.length, errors.length)
+const changes = await detectChanges(valid)
+const report = await writeReport(startedAt, stats, valid.length, errors.length, { changes })
 console.log(report)
