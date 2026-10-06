@@ -1,0 +1,14 @@
+{
+  "name": "polite-scraper",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "start:fake": "node src/index.js --with-fake",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "zod": "^4.6.5"
+  }
+}
