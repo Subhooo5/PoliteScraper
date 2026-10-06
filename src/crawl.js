@@ -1,4 +1,4 @@
-import { getPage } from './http.js'
+import { getPage, stats } from './http.js'
 import { extractBookLinks, extractNextPage } from './parse.js'
 
 const START_URL = 'https://books.toscrape.com/catalogue/page-1.html'
@@ -12,18 +12,27 @@ export async function discoverBooks() {
 
   while (pageUrl && pages < MAX_PAGES) {
     pages += 1
-    const { html } = await getPage(pageUrl, `catalogue-page-${pages}.html`)
+    let page
 
-    for (const link of extractBookLinks(html, pageUrl)) {
+    try {
+      page = await getPage(pageUrl, `catalogue-page-${pages}.html`)
+    } 
+    catch (error) {
+      console.log(`FAILED ${pageUrl} ${error.message}`)
+      stats.failedPages += 1
+      break
+    }
+
+    for (const link of extractBookLinks(page.html, pageUrl)) {
       discovered += 1
       if (!found.has(link)) {
         found.set(link, pageUrl)
       }
     }
-    
-    pageUrl = extractNextPage(html, pageUrl)
-  }
 
+    pageUrl = extractNextPage(page.html, pageUrl)
+  }
+  
   const books = [...found].map(([url, sourcePage]) => ({ url, sourcePage }))
   return { pages, discovered, books }
 }
