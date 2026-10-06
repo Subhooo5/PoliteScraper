@@ -3,6 +3,9 @@ import { existsSync } from 'node:fs'
 
 const USER_AGENT = 'FlyRankInternshipA9/1.0 (+https://github.com/Subhooo5/PoliteScraper)'
 const TIMEOUT_MS = 8000
+const DELAY_MS = 600
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export const stats = { fetched: 0, cacheHits: 0, failedPages: 0 }
 
@@ -16,6 +19,7 @@ export async function getPage(url, cacheName) {
     return { html, fetchedAt: mtime.toISOString() }
   }
 
+  await sleep(DELAY_MS)
   const response = await fetch(url, {
     headers: { 'User-Agent': USER_AGENT },
     signal: AbortSignal.timeout(TIMEOUT_MS)
@@ -24,7 +28,7 @@ export async function getPage(url, cacheName) {
   if (response.status !== 200) {
     throw new Error(`Request failed with status ${response.status} for ${url}`)
   }
-  
+
   const html = await response.text()
   await mkdir('cache', { recursive: true })
   await writeFile(file, html)
