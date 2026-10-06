@@ -5,6 +5,7 @@ import { writeReport } from './report.js'
 import { stats } from './http.js'
 import { writeCsv } from './csv.js'
 import { detectChanges } from './changes.js'
+import { writeDashboard } from './dashboard.js'
 
 const startedAt = new Date()
 const withFake = process.argv.includes('--with-fake')
@@ -26,4 +27,5 @@ const { valid, errors } = await validateAndStore(rawRecords)
 await writeCsv(valid)
 const changes = await detectChanges(valid)
 const report = await writeReport(startedAt, stats, valid.length, errors.length, { changes })
+await writeDashboard(valid, report)
 console.log(report)
